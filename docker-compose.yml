@@ -1,0 +1,89 @@
+version: '3.1'
+
+services:
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8-management
+    command: rabbitmq-server
+    restart: unless-stopped
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+    networks:
+      - project-network
+
+  mongo:
+    container_name: mongo-project
+    image: mongo:4
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    networks:
+      - project-network
+
+  postgres:
+    container_name: postgres-project
+    image: postgres:13-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - project-network
+
+  nginx:
+    container_name: nginx-project
+    image: nginx:1.19
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./subrequest.js:/etc/nginx/subrequest.js
+    networks:
+      - project-network
+#    depends_on:
+#      - warehouse-service:
+#         condition:
+
+
+  warehouse-service:
+    container_name: warehouse-service
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - project-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+      - mongo
+      - postgres
+    command:
+    ["./wait-for-it.sh", "rabbit:5672", "--", "python", "app.py"],
+    ["./wait-for-it.sh", "postgres:5432", "--", "python", "app.py"],
+    ["./wait-for-it.sh", "mongo:27017", "--", "python", "app.py"]
+
+  order-service:
+    container_name: order-service
+    image: order-service
+    networks:
+      - project-network
+      ports:
+        - "8100:8100"
+    depends_on:
+      - rabbitmq
+      - mongo
+      - postgres
+
+networks:
+  project-network:
