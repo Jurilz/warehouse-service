@@ -38,7 +38,7 @@ class DefaultWarehouseState: WarehouseState {
     override fun getByProductName(productName: String): List<Pallet>? {
         val pallets = mutableListOf<Pallet>()
         for (pallet: Pallet in this.pallets.values) {
-            if (pallet.product == productName) {
+            if (pallet.product == productName && pallet.amount != 0) {
                 pallets.add(pallet)
             }
         }

@@ -21,6 +21,8 @@ services:
       - "27017:27017"
     networks:
       - project-network
+    depends_on:
+      - postgres
 
   postgres:
     container_name: postgres-project
@@ -32,10 +34,12 @@ services:
       - /var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data
       POSTGRES_PASSWORD: postgres
     networks:
       - project-network
+    depends_on:
+      - rabbitmq
 
   nginx:
     container_name: nginx-project
@@ -49,9 +53,9 @@ services:
       - ./subrequest.js:/etc/nginx/subrequest.js
     networks:
       - project-network
-#    depends_on:
-#      - warehouse-service:
-#         condition:
+    depends_on:
+      - warehouse-service
+      - order-service
 
 
   warehouse-service:
@@ -68,22 +72,46 @@ services:
       - rabbitmq
       - mongo
       - postgres
-    command:
-    ["./wait-for-it.sh", "rabbit:5672", "--", "python", "app.py"],
-    ["./wait-for-it.sh", "postgres:5432", "--", "python", "app.py"],
-    ["./wait-for-it.sh", "mongo:27017", "--", "python", "app.py"]
+      - order-service
 
   order-service:
     container_name: order-service
+    restart: unless-stopped
     image: order-service
     networks:
       - project-network
-      ports:
-        - "8100:8100"
+    ports:
+      - "8100:8100"
     depends_on:
       - rabbitmq
       - mongo
       - postgres
+
+  warehouse-frontend:
+    container_name:  warehouse-frontend
+    restart: unless-stopped
+    image: warehouse-frontend
+    networks:
+      - project-network
+    ports:
+      - "4200:8200"
+    depends_on:
+      - warehouse-service
+      - order-service
+      - nginx
+
+  shop-frontend:
+    container_name:  shop-frontend
+    restart: unless-stopped
+    image: shop-frontend
+    networks:
+      - project-network
+    ports:
+      - "4300:8300"
+    depends_on:
+      - warehouse-service
+      - order-service
+      - nginx
 
 networks:
   project-network:
