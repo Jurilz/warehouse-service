@@ -64,6 +64,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - ./environments/warehouse-service.env
     networks:
       - project-network
     ports:
@@ -115,3 +117,7 @@ services:
 
 networks:
   project-network:
+
+#secrets:
+#  warehouse_secret:
+#    file: ./secrets/warehouse.secret

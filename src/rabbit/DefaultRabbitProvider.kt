@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.rabbitmq.client.*
+import com.warehouseservice.Arguments
 import com.warehouseservice.events.Event
 import com.warehouseservice.events.MessageTopic
 import com.warehouseservice.events.MessageBroker
@@ -42,8 +43,8 @@ class DefaultRabbitProvider(private val messageBroker: MessageBroker): RabbitPro
     val ORDER_COMMAND_KEY = "orderCommand"
 
     init {
-        //TODO: look at this - env ?
-//        connectionFactory.host = "rabbitmq"
+
+        connectionFactory.host = Arguments.rabbitHost
         val newConnection: Connection = this.connectionFactory.newConnection()
         channel = newConnection.createChannel()
         channel.exchangeDeclare(GENERAL_EXCHANGE, TYPE_DIRECT, true)

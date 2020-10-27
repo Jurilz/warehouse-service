@@ -45,6 +45,8 @@ repositories {
 }
 
 dependencies {
+    // Arkenenv
+    implementation "com.apurebase:arkenv:$arkenvVersion"
     // Exposed
     implementation "org.jetbrains.exposed:exposed-core:$exposed_version"
     implementation "org.jetbrains.exposed:exposed-dao:$exposed_version"
