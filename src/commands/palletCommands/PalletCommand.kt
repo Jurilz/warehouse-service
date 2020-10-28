@@ -12,12 +12,7 @@ open class PalletCommand (
     val storageLocation: String?,
     val state: String,
     val lastModified: String
-): Command() {
-
-    override fun execute() {
-        TODO("Not yet implemented")
-    }
-}
+): Command()
 
 fun PalletCommand.buildPalletEvent(state: String): PalletEvent {
     val palletEvent = PalletEvent(

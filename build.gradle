@@ -16,7 +16,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath("com.github.jengelman.gradle.plugins:shadow:6.0.0")
+        classpath("com.github.jengelman.gradle.plugins:shadow:$shadow_version")
     }
 }
 
@@ -45,6 +45,8 @@ repositories {
 }
 
 dependencies {
+    // Cars
+    implementation "com.cars:docker-secrets:$dockerSecretsJavaVersion"
     // Arkenenv
     implementation "com.apurebase:arkenv:$arkenvVersion"
     // Exposed

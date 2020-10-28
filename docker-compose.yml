@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.2'
 
 services:
 
@@ -57,7 +57,6 @@ services:
       - warehouse-service
       - order-service
 
-
   warehouse-service:
     container_name: warehouse-service
     restart: unless-stopped
@@ -75,11 +74,19 @@ services:
       - mongo
       - postgres
       - order-service
+    secrets:
+      - warehouse_secret
+
 
   order-service:
     container_name: order-service
     restart: unless-stopped
+#    build:
+#      context: ../projectOrderService
+#      dockerfile: ./Dockerfile
     image: order-service
+    env_file:
+      - ./environments/order-service.env
     networks:
       - project-network
     ports:
@@ -92,7 +99,10 @@ services:
   warehouse-frontend:
     container_name:  warehouse-frontend
     restart: unless-stopped
-    image: warehouse-frontend
+    build:
+      context: ../thewarehouse-Jurilz/warehouse/warehouseFrontend
+      dockerfile: ./Dockerfile
+#    image: warehouse-frontend
     networks:
       - project-network
     ports:
@@ -105,7 +115,10 @@ services:
   shop-frontend:
     container_name:  shop-frontend
     restart: unless-stopped
-    image: shop-frontend
+    build:
+      context: ../thewarehouse-Jurilz/shop/shopFrontend
+      dockerfile: ./Dockerfile
+#    image: shop-frontend
     networks:
       - project-network
     ports:
@@ -118,6 +131,6 @@ services:
 networks:
   project-network:
 
-#secrets:
-#  warehouse_secret:
-#    file: ./secrets/warehouse.secret
+secrets:
+  warehouse_secret:
+    file: ./secrets/warehouse.secret

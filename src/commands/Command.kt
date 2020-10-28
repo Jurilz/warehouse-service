@@ -18,6 +18,4 @@ import com.warehouseservice.commands.palletCommands.PalletCommand
     JsonSubTypes.Type(value = ValidateOrderCommand::class, name = "ValidateOrderCommand"),
     JsonSubTypes.Type(value = CancelOrderCommand::class, name = "CancelOrderCommand")
 )
-abstract class Command {
-    abstract fun execute()
-}
+abstract class Command

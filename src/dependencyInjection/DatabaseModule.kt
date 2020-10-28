@@ -1,6 +1,8 @@
 package com.warehouseservice.dependencyInjection
 
 import com.warehouseservice.Arguments
+import com.warehouseservice.utils.loadDockerSecrets
+import com.warehouseservice.utils.readDockerSecret
 import org.jetbrains.exposed.sql.Database
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
@@ -10,12 +12,10 @@ val databaseModule = module {
     single {
         KMongo
             .createClient("mongodb://${Arguments.mongoHost}:${Arguments.mongoPort}")
+//            .createClient()
             .coroutine
             .getDatabase(Arguments.eventDatabaseName)
-//            .createClient("mongodb://mongo:27017")
-//            .createClient()
 
-//            .getDatabase("palletEvents")
 
     }
 
@@ -24,10 +24,8 @@ val databaseModule = module {
             .connect(
                 url = "jdbc:postgresql://${Arguments.postgresHost}:${Arguments.postgresPort}/${Arguments.productDatabaseName}",
                 driver = "org.postgresql.Driver",
-                user = Arguments.postgresUser,
-                password = Arguments.postgresPassword)
-//            .connect("jdbc:postgresql://postgres:5432/products", driver = "org.postgresql.Driver",
-//                user = "postgres", password = "postgres")
+                user = readDockerSecret("postgresUser")!!,
+                password =  readDockerSecret("postgresPassword")!!)
 //            .connect("jdbc:postgresql://localhost:5432/products", driver = "org.postgresql.Driver",
 //                user = "postgres", password = "postgres")
     }

@@ -33,7 +33,7 @@ object Arguments: Arkenv() {
         defaultValue = { "postgres" }
     }
 
-    val postgresPassword by argument<String>(){
+    val postgresPassword by argument<String>() {
         defaultValue = { "postgres" }
     }
 

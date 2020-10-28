@@ -11,12 +11,7 @@ open class OrderCommand(
     val address: String,
     val lastModified: String,
     val state: String
-): Command() {
-
-    override fun execute() {
-        TODO("Not yet implemented")
-    }
-}
+): Command()
 
 fun OrderCommand.buildOrderEvent(state: String): OrderEvent {
     val orderEvent = OrderEvent(
