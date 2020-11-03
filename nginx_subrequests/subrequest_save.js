@@ -17,23 +17,5 @@ function get_places(orders, r) {
         })
         );
     }
-    resolveAll(promises)
-    .then(() => r.return(200, JSON.stringify(orders)))
-    .catch(error => r.return(error.stack));
+    Promise.all(promises).then(() => r.return(200, JSON.stringify(orders)));
 }
-
-function resolveAll(promises) {
-    return new Promise((resolve, reject) => {
-        var n = promises.length;
-        var rs = Array(n);
-        var done = () => {
-            if (--n === 0) {
-                resolve(rs);
-            }
-        };
-        promises.forEach((p, i) => {
-            p.then((x) => { rs[i] = x; }, reject).then(done);
-        });
-    });
-}
-

@@ -77,7 +77,6 @@ services:
     secrets:
       - warehouse_secret
 
-
   order-service:
     container_name: order-service
     restart: unless-stopped
