@@ -5,21 +5,21 @@ function get_orders_with_places(r) {
 }
 
 function get_places(orders, r) {
-    var promises = [];
-    for (var i = 0; i < orders.length; i++) {
-        orders[i].warehousePlaces = [];
-        promises.push(r.subrequest('/location/' + orders[i].productName)
-        .then(function(response) {
-            var pallets = response.responseBody;
-            for (pallet in pallets) {
-                orders[i].warehousePlaces.push(pallet.storageLocation);
-            }
-        })
-        );
+    if (orders.length === 0) {
+        // return new Promise.resolve([]);
+        r.return(200, JSON.stringify([]));
     }
-    resolveAll(promises)
-    .then(() => r.return(200, JSON.stringify(orders)))
-    .catch(error => r.return(error.stack));
+    var on_loaction = (order, response) => {
+        var pallets = JSON.parse(response.responseBody);
+        order.warehousePlaces = pallets.map((x) => x.storageLocation);
+    }
+    return resolveAll(
+        orders.map((x) => {
+            x.warehousePlaces = [];
+            return r.subrequest('/location/' + x.productName)
+            .then(on_loaction.bind(null, x));
+        })
+    ).then(() => r.return(200, JSON.stringify(orders)));
 }
 
 function resolveAll(promises) {
@@ -32,7 +32,7 @@ function resolveAll(promises) {
             }
         };
         promises.forEach((p, i) => {
-            p.then((x) => { rs[i] = x; }, reject).then(done);
+            p.then((x) => { rs[i] = x; }, reject).then(done).catch(error => r.return(error.stack));
         });
     });
 }

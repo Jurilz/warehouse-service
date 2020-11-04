@@ -24,8 +24,12 @@ val databaseModule = module {
             .connect(
                 url = "jdbc:postgresql://${Arguments.postgresHost}:${Arguments.postgresPort}/${Arguments.productDatabaseName}",
                 driver = "org.postgresql.Driver",
-                user = readDockerSecret("postgresUser")!!,
-                password =  readDockerSecret("postgresPassword")!!)
+                user = loadDockerSecrets(Arguments.warehouseSecret)["POSTGRES_USER"]!!,
+                password =  loadDockerSecrets(Arguments.warehouseSecret)["POSTGRES_PASSWORD"]!!)
+//                user = Arguments.postgresUser,
+//                password = Arguments.postgresPassword)
+//                user = readDockerSecret("postgresUser")!!,
+//                password = readDockerSecret("postgresPassword")!!)
 //            .connect("jdbc:postgresql://localhost:5432/products", driver = "org.postgresql.Driver",
 //                user = "postgres", password = "postgres")
     }

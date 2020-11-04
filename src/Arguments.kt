@@ -40,4 +40,6 @@ object Arguments: Arkenv() {
     val rabbitHost by argument<String>() {
         defaultValue = { "rabbitmq" }
     }
+
+    val warehouseSecret by argument<String>()
 }

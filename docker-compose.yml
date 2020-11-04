@@ -80,12 +80,12 @@ services:
   order-service:
     container_name: order-service
     restart: unless-stopped
-#    build:
-#      context: ../projectOrderService
-#      dockerfile: ./Dockerfile
-    image: order-service
+    build:
+      context: ../projectOrderService
+      dockerfile: ./Dockerfile
+#    image: order-service
     env_file:
-      - ./environments/order-service.env
+      - ../projectOrderService/environments/order-service.env
     networks:
       - project-network
     ports:
@@ -94,6 +94,8 @@ services:
       - rabbitmq
       - mongo
       - postgres
+    secrets:
+      - order_secret
 
   warehouse-frontend:
     container_name:  warehouse-frontend
@@ -133,3 +135,5 @@ networks:
 secrets:
   warehouse_secret:
     file: ./secrets/warehouse.secret
+  order_secret:
+    file: ../projectOrderService/secrets/order.secret
